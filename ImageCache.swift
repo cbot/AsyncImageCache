@@ -5,8 +5,8 @@ public enum ImageFormat {
     case jpeg(quality: CGFloat)
 }
 
-public class ImageCache {
-    private let memoryCache = NSCache<NSString, ImageCacheItem>()
+public class AsyncImageCache {
+    private let memoryCache = NSCache<NSString, AsyncImageCacheItem>()
     private let diskCacheUrl: URL
     private let syncQueue = DispatchQueue(label: "imageCache")
     
@@ -70,7 +70,7 @@ public class ImageCache {
     ///   - completion: a completion closure that is called after the data was stored
     public func store(data: Data, forKey key: String, image: UIImage? = nil, callbackQueue: DispatchQueue = DispatchQueue.main, completion: (() -> ())? = nil) {
         syncQueue.async {
-            let item = ImageCacheItem(data: data, image: image)
+            let item = AsyncImageCacheItem(data: data, image: image)
             
             self.memoryCache.setObject(item, forKey: key as NSString, cost: data.count)
             
@@ -113,7 +113,7 @@ public class ImageCache {
     ///   - key: the key to fetch the item for
     ///   - callbackQueue: a DispatchQueue on which to call the completion closure, defaults to the main queue
     ///   - completion: a completion closure that is called with the result of the fetch process
-    public func fetch(itemWithKey key: String, callbackQueue: DispatchQueue = DispatchQueue.main, completion: @escaping (_ item: ImageCacheItem?) -> ()) {
+    public func fetch(itemWithKey key: String, callbackQueue: DispatchQueue = DispatchQueue.main, completion: @escaping (_ item: AsyncImageCacheItem?) -> ()) {
         syncQueue.async {
             let url = self.diskCacheUrl.appendingPathComponent(key)
             
@@ -136,7 +136,7 @@ public class ImageCache {
                     let data = try Data(contentsOf: url)
                     
                     // create a new cache item
-                    let item = ImageCacheItem(data: data, image: UIImage(data: data), created: created)
+                    let item = AsyncImageCacheItem(data: data, image: UIImage(data: data), created: created)
                     
                     // update memory cache
                     self.memoryCache.setObject(item, forKey: key as NSString, cost: data.count)

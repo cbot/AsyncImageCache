@@ -2,7 +2,7 @@ import UIKit
 
 /// This class represents a sigle cached item in an ImageCache
 /// it basically wraps an UIImage and adds two date properties
-public class ImageCacheItem {
+public class AsyncImageCacheItem {
     public internal(set) var lastUsed: Date
     public let created: Date
     public let image: UIImage
