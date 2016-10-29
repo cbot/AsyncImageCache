@@ -4,8 +4,8 @@ import UIKit
 /// it basically wraps an UIImage and adds two date properties
 public class ImageCacheItem {
     public internal(set) var lastUsed: Date
-    let created: Date
-    let image: UIImage
+    public let created: Date
+    public let image: UIImage
     
     init(data: Data, image: UIImage?, created: Date? = nil) {
         if let image = image {
