@@ -18,7 +18,7 @@ public class AsyncImageCache {
     ///   - memoryCacheSize: the size of the memory cache in bytes
     ///   - autoCleanupDays: the maximum number to keep ununsed(!) cached items. Set to 0 to disable auto cleanup.
     /// - Throws: throws NSErrors if the path for the disk cache could not be determined
-    public init(name: String, memoryCacheSize: Int = 32 * 1024 * 1024, autoCleanupDays: Int = 30) throws {
+    public init(name: String, memoryCacheSize: Int = 32 * 1024 * 1024, autoCleanupDays days: Int = 30) throws {
         memoryCache.totalCostLimit = memoryCacheSize
         
         guard let cachesPath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first else {
@@ -30,8 +30,8 @@ public class AsyncImageCache {
             try FileManager.default.createDirectory(at: diskCacheUrl, withIntermediateDirectories: true, attributes: nil)
         }
         
+        autoCleanupDays = days
         NotificationCenter.default.addObserver(self, selector: #selector(cleanup), name: Notification.Name.UIApplicationWillResignActive, object: nil)
-        self.autoCleanupDays = autoCleanupDays
     }
 
     
