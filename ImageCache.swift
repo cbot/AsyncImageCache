@@ -9,14 +9,16 @@ public class AsyncImageCache {
     private let memoryCache = NSCache<NSString, AsyncImageCacheItem>()
     private let diskCacheUrl: URL
     private let syncQueue = DispatchQueue(label: "imageCache")
+    private let autoCleanupDays: Int
     
     /// Initializes a new ImageCache instance
     ///
     /// - Parameters:
     ///   - name: the name of the cache. This is used to create a folder for the disk cache. Make sure to only use characters that are safe in a file system path.
     ///   - memoryCacheSize: the size of the memory cache in bytes
+    ///   - autoCleanupDays: the maximum number to keep ununsed(!) cached items. Set to 0 to disable auto cleanup.
     /// - Throws: throws NSErrors if the path for the disk cache could not be determined
-    public init(name: String, memoryCacheSize: Int = 32 * 1024 * 1024) throws {
+    public init(name: String, memoryCacheSize: Int = 32 * 1024 * 1024, autoCleanupDays: Int = 30) throws {
         memoryCache.totalCostLimit = memoryCacheSize
         
         guard let cachesPath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first else {
@@ -29,6 +31,7 @@ public class AsyncImageCache {
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(cleanup), name: Notification.Name.UIApplicationWillResignActive, object: nil)
+        self.autoCleanupDays = autoCleanupDays
     }
 
     
@@ -160,6 +163,8 @@ public class AsyncImageCache {
     /// The files in the disk cache folder are enumerated and all files whose last access date is older than 30 days are deleted.
     /// This is to make sure the disk cache does not keep growing and growing over time.
     @objc private func cleanup() {
+        if autoCleanupDays == 0 { return } // cleanup disabled
+        
         syncQueue.sync {
             memoryCache.removeAllObjects()
             
@@ -172,7 +177,7 @@ public class AsyncImageCache {
                     do {
                         try (url as NSURL).getResourceValue(&lastAccess, forKey: URLResourceKey.contentAccessDateKey)
                         if let lastAccess = lastAccess as? Date {
-                            if (now.timeIntervalSince(lastAccess) > 30 * 24 * 3600) {
+                            if (now.timeIntervalSince(lastAccess) > autoCleanupDays * 24 * 3600) {
                                 try FileManager.default.removeItem(at: url)
                             }
                         }

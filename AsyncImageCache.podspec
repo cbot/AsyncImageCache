@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "AsyncImageCache"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "AsyncImageCache is a fast, low level cache implementation that stores UIImage instances in both memory and on disk"
   s.description  = "AsyncImageCache is a fast cache implementation that stores UIImage instances in both memory and on disk. All operations are asynchronously executed on a background thread for maximum performance. The features are rather low level on purpose, this allows AsyncImageCache to be used as a basis for higher level implementations."
   s.homepage     = "https://github.com/cbot/AsyncImageCache"
