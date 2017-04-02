@@ -4,5 +4,5 @@ AsyncImageCache is a fast cache implementation that stores UIImage instances in 
 ## Installation
 Use CocoaPods to add AsyncImageCache to your project. Just add the following line to your Podfile.
 ```
-pod 'AsyncImageCache', '~> 1.0.1'
+pod 'AsyncImageCache', '~> 1.1.0'
 ```

@@ -6,8 +6,10 @@ public class AsyncImageCacheItem {
     public internal(set) var lastUsed: Date
     public let created: Date
     public let image: UIImage
+    public let data: Data
     
     init(data: Data, image: UIImage?, created: Date? = nil) {
+        self.data = data
         if let image = image {
             self.image = image
         } else {
